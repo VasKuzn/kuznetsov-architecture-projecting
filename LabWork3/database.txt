@@ -1,0 +1,63 @@
+@startuml
+class Accounts {
+  id: uuid
+  nickname: varchar(100)
+  email: varchar(230)
+  password: varchar(200)
+  firstname: text
+  lastname: text
+  phonenumber: varchar(20)
+  avatar: text
+}
+
+class PersonalAccountInfo {
+  id: uuid
+  dateOfAccountCreation: timestamp
+  dateOfLastOnline: timestamp
+  country: integer
+}
+
+class Friends {
+  id: uuid
+  userWhoSent: uuid
+  userWihoReceived: uuid
+  status: text
+  friendsSince: timestamp
+}
+
+class PersonalConferences {
+  id: uuid
+  user1: uuid
+  user2: uuid
+  isFriend: boolean
+  startupDate: timestamp
+  lastActivity: timestamp
+}
+
+class MessageDocument {
+  type: string
+  id: uuid
+  messageContent: text
+  messageDateSent: timestamp
+  accountId: uuid
+  accountNickname: string
+  personalConferenceId: uuid
+  groupConferenceId: uuid
+  sectorId: uuid
+  isEdited: boolean
+  previousMessageContent: text
+  isPinned: boolean
+  isRead: boolean
+  referenceMessageId: uuid
+  MediaUrl: string
+  MediaType: string
+  FileName: string
+}
+
+Accounts "1" -- "1" PersonalAccountInfo : содержит
+Accounts "1" -- "0..*" Friends : инициирует и получает
+Accounts "1" -- "0..*" PersonalConferences : участвует
+
+PersonalConferences "1" -- "0..*" MessageDocument : cодержит
+Accounts "1" -- "0..*" MessageDocument : отправляет
+@enduml
