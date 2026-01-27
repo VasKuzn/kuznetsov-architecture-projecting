@@ -1,0 +1,133 @@
+@startuml
+
+box "Клиентская часть" 
+  actor "Пользователь 1" as User1
+  actor "Пользователь 2" as User2
+  participant "SignalR Client 1" as Client1
+  participant "SignalR Client 2" as Client2
+end box
+
+box "Серверная часть .NET" 
+  participant "PersonalConferences\nController" as PCController
+  participant "MessagesController" as MsgController
+  participant "PersonalConferenceService" as PCService
+  participant "CouchBaseMessagesService" as CBService
+  participant "SignalR Hub" as Hub
+  database "PostgreSQL" as Postgres
+  database "Couchbase" as Couchbase
+end box
+
+== Проверка и создание персональной конференции ==
+
+User1 -> PCController: Нажимает на иконку пользователя №2
+activate PCController
+PCController -> PCService: GetAllConferencesByAccountAsync(user1Id)
+activate PCService
+PCService -> Postgres: Проверяет существование конференции
+activate Postgres
+Postgres --> PCService: Результат проверки (нет конференции)
+deactivate Postgres
+PCService --> PCController: Пустой список конференций
+deactivate PCService
+PCController --> User1: Конференция не найдена
+
+User1 -> PCController: POST /api/personalconference
+PCController -> PCService: CreateConferenceAsync(conferenceModel)
+activate PCService
+
+PCService -> Postgres: Проверяет существование пользователей
+activate Postgres
+Postgres --> PCService: Пользователи существуют
+deactivate Postgres
+
+PCService -> Postgres: Проверяет существование конференции
+activate Postgres
+Postgres --> PCService: Конференции нет
+deactivate Postgres
+
+PCService -> Postgres: Создает конференцию
+activate Postgres
+Postgres --> PCService: Созданная конференция
+deactivate Postgres
+
+PCService --> PCController: PersonalConferenceModel
+deactivate PCService
+
+PCController -> Hub: Clients.Users(user1, user2)\n.SendAsync("PersonalConferenceCreated")
+activate Hub
+
+Hub -> Client1: "PersonalConferenceCreated" (с данными конференции)
+activate Client1
+Client1 --> Hub: 
+deactivate Client1
+
+Hub -> Client2: "PersonalConferenceCreated" (с данными конференции)
+activate Client2
+Client2 --> User2: Показывает иконку новой созданной конференции в списке
+Client2 --> Hub: 
+deactivate Client2
+
+Hub --> PCController: 
+deactivate Hub
+
+PCController --> User1: 201 Created (конференция создана)
+deactivate PCController
+
+== Отправка и получение сообщений ==
+
+User1 -> MsgController: POST /api/messages (MessageModel)
+activate MsgController
+MsgController -> CBService: CreateMessageAsync(message)
+activate CBService
+
+CBService -> Couchbase: Проверяет данные и генерирует ID
+activate Couchbase
+Couchbase --> CBService: OK
+deactivate Couchbase
+
+CBService -> Couchbase: Вставляет сообщение с personalConferenceId
+activate Couchbase
+Couchbase --> CBService: Сообщение создано
+deactivate Couchbase
+
+CBService --> MsgController: MessageModel
+deactivate CBService
+
+MsgController -> Hub: Clients.Group("personalconference-{id}")\n.SendAsync("ReceivePersonalMessage")
+activate Hub
+
+Hub -> Client1: "ReceivePersonalMessage" (новое сообщение)
+activate Client1
+Client1 --> Hub: 
+deactivate Client1
+
+Hub -> Client2: "ReceivePersonalMessage" (новое сообщение)
+activate Client2
+Client2 --> Hub: 
+deactivate Client2
+
+Hub --> MsgController: 
+deactivate Hub
+
+MsgController --> User1: 201 Created (сообщение отправлено)
+deactivate MsgController
+
+User2 -> Client2: Получает уведомление о сообщении
+activate Client2
+Client2 -> MsgController: GET /api/messages/bypersonalconference?personalConferenceId=...
+activate MsgController
+
+MsgController -> CBService: GetAllMessagesByPersonalConferenceAsync(personalConferenceId)
+activate CBService
+CBService -> Couchbase: Запрос сообщений по personalConferenceId
+activate Couchbase
+Couchbase --> CBService: Список сообщений
+deactivate Couchbase
+CBService --> MsgController: List<MessageModel>
+deactivate CBService
+
+MsgController --> Client2: 200 OK (сообщения)
+deactivate MsgController
+Client2 --> User2: Отображает сообщение от Пользователя 1
+deactivate Client2
+@enduml
