@@ -424,6 +424,7 @@
    
    * 200, здесь тело выше
    * 400, $"Bad request error: {ex.Message}" - ошибка при создании конференции
+   * 409, $"Conflict: {ex.Message}" - конференция уже существует между этими пользователями
    * 500, $"Internal server error" - внутренняя ошибка сервера
 
 3. GET: /api/personalconference
