@@ -501,10 +501,10 @@
    #### Возможные ответы при ошибке и тесты:
 
    Headers:
-   ![Получение всех конференций](./Postman_Files/allconferencesheaders.png)
+   ![Получение всех конференций](./Postman_Files/allconferecesheaders.png)
    
    * 200, здесь тело выше
-   ![Получение всех конференций](./Postman_Files/allconferences200.png)
+   ![Получение всех конференций](./Postman_Files/allconfereces200.png)
    * 500, $"Internal server error" - внутренняя ошибка сервера
 
 4. DELETE: api/personalconferences/{id}
