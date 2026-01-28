@@ -71,10 +71,14 @@
     "avatarFile": "string"
     }
    ```
-   Возможные ответы при ошибке:
+   #### Возможные ответы при ошибке и тесты:
    
+   Headers:
+   ![Аккаунт по email](./Postman_Files/accountgetemailheaders.png)
    * 200, здесь тело выше
+   ![Аккаунт по email](./Postman_Files/accountgetemail200.png)
    * 404, $"Account not found error: {ex.Message}" - аккаунт не найден при поиске
+   ![Аккаунт по email](./Postman_Files/accountgetemail404.png)
    * 500, $"Internal server error: {ex.Message}" - ошибка со стороны сервера
     
 2. POST: api/accounts
@@ -165,11 +169,17 @@
       "avatarFile": "string"
     }
    ```
-   Возможные ответы при ошибке:
+   #### Возможные ответы при ошибке и тесты:
+   
+   Headers:
+   ![Создание аккаунта](./Postman_Files/accountpostheaders.png)
    
    * 200, здесь тело выше
+   ![Создание аккаунта](./Postman_Files/accountpost200.png)
    * 409, $"Conflict" (при создании с nickname/email/phonenumber который уже существует
+   ![Создание аккаунта](./Postman_Files/accountpost409.png)
    * 400, $"Validation error" - ошибка при валидации входных данных
+   ![Создание аккаунта](./Postman_Files/accountpost400.png)
    * 500, $"Internal server error" - внутренняя ошибка сервера
 
 3. POST: api/accounts/login
@@ -231,13 +241,19 @@
    
    200 OK + выдача в cookie jwtoken
    
-   Возможные ответы при ошибке:
+   #### Возможные ответы при ошибке и тесты:
+
+   Headers:
+   ![Логин](./Postman_Files/accountloginheaders.png)
    
-   * 200
+   * 200, выдача в cookie jwtoken
+   ![Логин](./Postman_Files/accountlogin200.png)
    * 400, $"Bad request error: {ModelState}" - ошибка при создании токена
    * 401, $"User unauthorized error: {result.Error}" - если пользователь неавторизован
+   ![Логин](./Postman_Files/accountlogin401.png)
    * 404, $"Аккаунт с таким email не найден") - если введенный e-mail не найден в базе
-   
+   ![Логин](./Postman_Files/accountlogin404.png)
+
 4. PUT: api/accounts/{id}
    
    Описание: Обновление уже существующей сущности Accounts при обновленни данных пользователем в его настройках профиля
@@ -298,11 +314,16 @@
    
    200 OK
    
-   Возможные ответы при ошибке:
+   #### Возможные ответы при ошибке и тесты:
+
+   Headers:
+   ![Обновление аккаунта](./Postman_Files/accountupdateheaders.png)
    
    * 200, сущность успешно обновлена
+   ![Обновление аккаунта](./Postman_Files/accountupdate200.png)
    * 404, $"Account not found error: {ex.Message}" - аккаунт не найден
    * 400, $"Bad request error" - ошибка при обновлении на уровне сервиса
+   ![Обновление аккаунта](./Postman_Files/accountupdate400.png)
    * 500, $"Internal server error" - внутренняя ошибка сервера
    
 ### Описание API для Personal Conferences
@@ -349,10 +370,15 @@
       "lastActivity": DateTimeOffset
     }
    ```
-   Возможные ответы при ошибке:
-   
+   #### Возможные ответы при ошибке и тесты:
+
+   Headers:
+   ![Все конференции по аккаунту](./Postman_Files/allbyaccountpersonalconferencesheaders.png)
+
    * 200, здесь тело выше
+   ![Все конференции по аккаунту](./Postman_Files/allbyaccountpersonalconferences200.png)
    * 400 - ошибка валидации
+   ![Все конференции по аккаунту](./Postman_Files/allbyaccountpersonalconferences400.png)
    * 500, $"Internal server error" - внутренняя ошибка сервера
 
 2. POST: api/personalconference
@@ -420,11 +446,17 @@
       "lastActivity": DateTimeOffset
     }
    ```
-   Возможные ответы при ошибке:
+   #### Возможные ответы при ошибке и тесты:
+   
+   Headers:
+   ![Создание конференции](./Postman_Files/personalconferencepostheaders.png)
    
    * 200, здесь тело выше
+   ![Создание конференции](./Postman_Files/personalconferencepost200.png)
    * 400, $"Bad request error: {ex.Message}" - ошибка при создании конференции
+   ![Создание конференции](./Postman_Files/personalconferencepost400.png)
    * 409, $"Conflict: {ex.Message}" - конференция уже существует между этими пользователями
+   ![Создание конференции](./Postman_Files/personalconferencepost409.png)
    * 500, $"Internal server error" - внутренняя ошибка сервера
 
 3. GET: /api/personalconference
@@ -466,9 +498,13 @@
       "lastActivity": DateTimeOffset
     }
    ```
-   Возможные ответы при ошибке:
+   #### Возможные ответы при ошибке и тесты:
+
+   Headers:
+   ![Получение всех конференций](./Postman_Files/allconferencesheaders.png)
    
    * 200, здесь тело выше
+   ![Получение всех конференций](./Postman_Files/allconferences200.png)
    * 500, $"Internal server error" - внутренняя ошибка сервера
 
 4. DELETE: api/personalconferences/{id}
@@ -508,8 +544,13 @@
    
    200 OK
    
-   Возможные ответы при ошибке:
-   
-   * 200,
+   #### Возможные ответы при ошибке и тесты:
+
+   Headers:
+   ![Удаление конференций](./Postman_Files/personalconferencesdeleteheaders.png)
+
+   * 200, успешное удаление
+   ![Удаление конференций](./Postman_Files/personalconferencesdelete200.png)
    * 404, $"Personal Conference not found error: ID {id}" - конференция для удаления не найдена
+   ![Удаление конференций](./Postman_Files/personalconferencesdelete404.png)
    * 500, $"Internal server error" - внутренняя ошибка сервера
