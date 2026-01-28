@@ -77,8 +77,10 @@
    ![Аккаунт по email](./Postman_Files/accountgetemailheaders.png)
    * 200, здесь тело выше
    ![Аккаунт по email](./Postman_Files/accountgetemail200.png)
+   ![Аккаунт по email](./Postman_Files/accountgetemailauto.png)
    * 404, $"Account not found error: {ex.Message}" - аккаунт не найден при поиске
    ![Аккаунт по email](./Postman_Files/accountgetemail404.png)
+   ![Аккаунт по email](./Postman_Files/accountgetemailauto404.png)
    * 500, $"Internal server error: {ex.Message}" - ошибка со стороны сервера
     
 2. POST: api/accounts
@@ -176,10 +178,13 @@
    
    * 200, здесь тело выше
    ![Создание аккаунта](./Postman_Files/accountpost200.png)
+   ![Создание аккаунта](./Postman_Files/accountcreateauto.png)
    * 409, $"Conflict" (при создании с nickname/email/phonenumber который уже существует
    ![Создание аккаунта](./Postman_Files/accountpost409.png)
+   ![Создание аккаунта](./Postman_Files/accountcreateauto409.png)
    * 400, $"Validation error" - ошибка при валидации входных данных
    ![Создание аккаунта](./Postman_Files/accountpost400.png)
+   ![Создание аккаунта](./Postman_Files/accountcreateauto400.png)
    * 500, $"Internal server error" - внутренняя ошибка сервера
 
 3. POST: api/accounts/login
@@ -248,11 +253,14 @@
    
    * 200, выдача в cookie jwtoken
    ![Логин](./Postman_Files/accountlogin200.png)
+   ![Логин](./Postman_Files/accountloginauto.png)
    * 400, $"Bad request error: {ModelState}" - ошибка при создании токена
    * 401, $"User unauthorized error: {result.Error}" - если пользователь неавторизован
    ![Логин](./Postman_Files/accountlogin401.png)
+   ![Логин](./Postman_Files/accountloginauto401.png)
    * 404, $"Аккаунт с таким email не найден") - если введенный e-mail не найден в базе
    ![Логин](./Postman_Files/accountlogin404.png)
+   ![Логин](./Postman_Files/accountloginauto409.png)
 
 4. PUT: api/accounts/{id}
    
@@ -321,9 +329,11 @@
    
    * 200, сущность успешно обновлена
    ![Обновление аккаунта](./Postman_Files/accountupdate200.png)
+   ![Обновление аккаунта](./Postman_Files/accountupdateauto.png)
    * 404, $"Account not found error: {ex.Message}" - аккаунт не найден
    * 400, $"Bad request error" - ошибка при обновлении на уровне сервиса
    ![Обновление аккаунта](./Postman_Files/accountupdate400.png)
+   ![Обновление аккаунта](./Postman_Files/accountupdateauto400.png)
    * 500, $"Internal server error" - внутренняя ошибка сервера
    
 ### Описание API для Personal Conferences
@@ -377,8 +387,10 @@
 
    * 200, здесь тело выше
    ![Все конференции по аккаунту](./Postman_Files/allbyaccountpersonalconferences200.png)
+   ![Все конференции по аккаунту](./Postman_Files/getallpersonalconferencesbyaccountauto.png)
    * 400 - ошибка валидации
    ![Все конференции по аккаунту](./Postman_Files/allbyaccountpersonalconferences400.png)
+   ![Все конференции по аккаунту](./Postman_Files/getallpersonalconferencesbyaccountauto400.png)
    * 500, $"Internal server error" - внутренняя ошибка сервера
 
 2. POST: api/personalconference
@@ -453,10 +465,13 @@
    
    * 200, здесь тело выше
    ![Создание конференции](./Postman_Files/personalconferencepost200.png)
+   ![Создание конференции](./Postman_Files/createpersonalconferenceauto.png)
    * 400, $"Bad request error: {ex.Message}" - ошибка при создании конференции
    ![Создание конференции](./Postman_Files/personalconferencepost400.png)
+   ![Создание конференции](./Postman_Files/createpersonalconferenceauto400.png)
    * 409, $"Conflict: {ex.Message}" - конференция уже существует между этими пользователями
    ![Создание конференции](./Postman_Files/personalconferencepost409.png)
+   ![Создание конференции](./Postman_Files/createpersonalconferenceauto409.png)
    * 500, $"Internal server error" - внутренняя ошибка сервера
 
 3. GET: /api/personalconference
@@ -505,6 +520,7 @@
    
    * 200, здесь тело выше
    ![Получение всех конференций](./Postman_Files/allconfereces200.png)
+   ![Получение всех конференций](./Postman_Files/getallpersonalconferencesauto.png)
    * 500, $"Internal server error" - внутренняя ошибка сервера
 
 4. DELETE: api/personalconferences/{id}
@@ -551,6 +567,8 @@
 
    * 200, успешное удаление
    ![Удаление конференций](./Postman_Files/personalconferencesdelete200.png)
+   ![Удаление конференций](./Postman_Files/deletepersonalconferenceauto.png)
    * 404, $"Personal Conference not found error: ID {id}" - конференция для удаления не найдена
    ![Удаление конференций](./Postman_Files/personalconferencesdelete404.png)
+   ![Удаление конференций](./Postman_Files/deletepersonalconferenceauto404.png)
    * 500, $"Internal server error" - внутренняя ошибка сервера
