@@ -1,30 +1,29 @@
-# Backend build stage
-FROM mcr.microsoft.com/dotnet/sdk:9.0 AS build
+FROM node:23.8.0-alpine AS build
 
-WORKDIR /src
+ARG VITE_API_URL
+ARG VITE_ENVIRONMENT
+ARG VITE_USE_HTTPS
+ARG VITE_WS_URL
 
-COPY ["Syncro.Server/Syncro.Api/Syncro.Api.csproj", "Syncro.Api/"]
-COPY ["Syncro.Server/Syncro.Application/Syncro.Application.csproj", "Syncro.Application/"]
-COPY ["Syncro.Server/Syncro.Infrastructure/Syncro.Infrastructure.csproj", "Syncro.Infrastructure/"]
-COPY ["Syncro.Server/Syncro.Domain/Syncro.Domain.csproj", "Syncro.Domain/"]
-
-RUN cd Syncro.Api && dotnet restore
-
-COPY Syncro.Server/ .
-
-WORKDIR "/src/Syncro.Api"
-RUN dotnet publish -c Release -o /app/publish
-
-# Backend runtime stage
-FROM mcr.microsoft.com/dotnet/aspnet:9.0
+ENV VITE_API_URL=$VITE_API_URL \
+    VITE_ENVIRONMENT=$VITE_ENVIRONMENT \
+    VITE_USE_HTTPS=$VITE_USE_HTTPS \
+    VITE_WS_URL=$VITE_WS_URL
 
 WORKDIR /app
 
-COPY --from=build /app/publish .
+COPY package*.json ./
+RUN npm ci --legacy-peer-deps
+COPY . .
+RUN npm run build:prod
 
-EXPOSE 5000
+# Frontend serve stage with Nginx
+FROM nginx:1.25-alpine
 
-ENV ASPNETCORE_URLS=http://+:5000
-ENV ASPNETCORE_ENVIRONMENT=Production
+RUN rm /etc/nginx/conf.d/default.conf
+COPY nginx.conf /etc/nginx/conf.d/default.conf
+COPY --from=build /app/dist /usr/share/nginx/html
 
-ENTRYPOINT ["dotnet", "Syncro.Api.dll"]
+EXPOSE 80
+
+CMD ["nginx", "-g", "daemon off;"]
