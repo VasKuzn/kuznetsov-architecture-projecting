@@ -1,0 +1,63 @@
+name: Deploy
+
+on:
+  push:
+    branches:
+      - master
+  workflow_dispatch:
+
+env:
+  SERVER_HOST: 5.53.124.148
+  SERVER_USER: root
+  SERVER_PATH: /root/syncro
+
+jobs:
+  build-and-deploy:
+    runs-on: ubuntu-22.04
+
+    steps:
+      - uses: actions/checkout@v3
+
+      # Установка sshpass для пароль-based аутентификации
+      - name: Install sshpass
+        run: sudo apt-get update && sudo apt-get install -y sshpass
+
+      # Копирование кода на сервер
+      - name: Deploy code to server
+        env:
+          SSHPASS: ${{ secrets.SERVER_PASSWORD }}
+        run: |
+          sshpass -e rsync -avz \
+            --delete \
+            --exclude='.git' \
+            --exclude='.gitignore' \
+            --exclude='node_modules' \
+            --exclude='dist' \
+            --exclude='bin' \
+            --exclude='obj' \
+            --exclude='.vs' \
+            --exclude='.env' \
+            --exclude='appsettings.*.json' \
+            --exclude='password.txt' \
+            -e "ssh -o StrictHostKeyChecking=no" \
+            ./ \
+            ${{ env.SERVER_USER }}@${{ env.SERVER_HOST }}:${{ env.SERVER_PATH }}/
+
+      # Построение и запуск docker контейнеров
+      - name: Build and run Docker containers
+        env:
+          SSHPASS: ${{ secrets.SERVER_PASSWORD }}
+        run: |
+          sshpass -e ssh -o StrictHostKeyChecking=no ${{ env.SERVER_USER }}@${{ env.SERVER_HOST }} \
+            "cd ${{ env.SERVER_PATH }} && \
+             docker compose down || true && \
+             docker compose up -d --build"
+
+      # Вывод статуса контейнеров
+      - name: Check container status
+        env:
+          SSHPASS: ${{ secrets.SERVER_PASSWORD }}
+        run: |
+          sshpass -e ssh -o StrictHostKeyChecking=no ${{ env.SERVER_USER }}@${{ env.SERVER_HOST }} \
+            "cd ${{ env.SERVER_PATH }} && \
+             docker compose ps"
